@@ -1,0 +1,44 @@
+16:49:46 **** Incremental Build of configuration Debug for project P2 ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m33 -std=gnu11 -g3 -DDEBUG -DUSE_FULL_LL_DRIVER -DUSE_HAL_DRIVER -DSTM32L552xx -c -I../Core/Inc -I../Drivers/STM32L5xx_HAL_Driver/Inc -I../Drivers/STM32L5xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L5xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+In file included from ../Core/Inc/stm32l5xx_hal_conf.h:250,
+                 from ../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal.h:30,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Core/Src/main.c: In function 'main':
+../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_gpio.h:91:36: warning: passing argument 1 of 'HAL_GPIO_WritePin' makes pointer from integer without a cast [-Wint-conversion]
+   91 | #define GPIO_PIN_7                 ((uint16_t)0x0080)  /* Pin 7 selected    */
+      |                                    ^~~~~~~~~~~~~~~~~~
+      |                                    |
+      |                                    short unsigned int
+../Core/Inc/main.h:82:16: note: in expansion of macro 'GPIO_PIN_7'
+   82 | #define L0_Pin GPIO_PIN_7
+      |                ^~~~~~~~~~
+../Core/Src/main.c:121:37: note: in expansion of macro 'L0_Pin'
+  121 |                   HAL_GPIO_WritePin(L0_Pin, L0_Pin, GPIO_PIN_SET);
+      |                                     ^~~~~~
+In file included from ../Core/Inc/stm32l5xx_hal_conf.h:250,
+                 from ../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal.h:30,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_gpio.h:357:51: note: expected 'GPIO_TypeDef *' but argument is of type 'short unsigned int'
+  357 | void              HAL_GPIO_WritePin(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, GPIO_PinState PinState);
+      |                                     ~~~~~~~~~~~~~~^~~~~
+arm-none-eabi-gcc -o "P2.elf" @"objects.list"   -mcpu=cortex-m33 -T"C:\Users\germa\Escritorio\UNIVERSIDAD\PRACTICAS\SAC-WORKSPACE-\P2\STM32L552ZETXQ_FLASH.ld" --specs=nosys.specs -Wl,-Map="P2.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: P2.elf
+ 
+arm-none-eabi-size  P2.elf 
+arm-none-eabi-objdump -h -S P2.elf  > "P2.list"
+   text	   data	    bss	    dec	    hex	filename
+  22492	     20	   2620	  25132	   622c	P2.elf
+Finished building: default.size.stdout
+ 
+Finished building: P2.list
+ 
+16:49:57 **** Incremental Build of configuration Debug for project P2 ****
+make -j8 all 
+arm-none-eabi-size  P2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  22492	     20	   2620	  25132	   622c	P2.elf
+Finished building: default.size.stdout
+ 
