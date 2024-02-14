@@ -49,8 +49,8 @@ RTC_HandleTypeDef hrtc;
 PCD_HandleTypeDef hpcd_USB_FS;
 
 /* USER CODE BEGIN PV */
-uint8_t flag = 0;
-int estado = 0;
+uint8_t flag = 0; // variable afectada por la interrupcion
+int estado = 0; //variable que almacena el estado de parpadeo(1) o apagado(0)
 
 /* USER CODE END PV */
 
@@ -116,7 +116,7 @@ int main(void)
 
   while (1)
   {
-	  if(flag == 1){
+	  if(flag == 1){// Si detecta una interrupcion flag==1 y entra en el if
 
 		  if(estado==1){
 			  estado=0;
@@ -125,7 +125,7 @@ int main(void)
 		  }
 		  flag=0;
 	  }
-	if(estado==1){
+	if(estado==1){ // cuando el estado sea el 1 queremos que paarpadee
 
 		HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port,LED_GREEN_Pin);
 //		HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
@@ -133,7 +133,7 @@ int main(void)
 //		HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
 		HAL_Delay(500);
 
-	}else{
+	}else{ // en otro caso queremos que se apague
 		HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
 	}
     /* USER CODE END WHILE */
@@ -542,7 +542,7 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-void HAL_GPIO_EXTI_Rising_Callback(uint16_t GPIO_Pin){
+void HAL_GPIO_EXTI_Rising_Callback(uint16_t GPIO_Pin){ // esta funcion se ejecuta al detectar una interrupcion
 	flag=1;
 }
 

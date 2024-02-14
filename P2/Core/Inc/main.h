@@ -68,9 +68,9 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define B1_Pin GPIO_PIN_13
-#define B1_GPIO_Port GPIOC
-#define B1_EXTI_IRQn EXTI13_IRQn
+#define B0_Pin GPIO_PIN_13
+#define B0_GPIO_Port GPIOC
+#define B0_EXTI_IRQn EXTI13_IRQn
 #define VBUS_SENSE_Pin GPIO_PIN_2
 #define VBUS_SENSE_GPIO_Port GPIOC
 #define UCPD_FLT_Pin GPIO_PIN_14
@@ -81,12 +81,15 @@ void Error_Handler(void);
 #define ST_LINK_VCP_RX_GPIO_Port GPIOG
 #define L0_Pin GPIO_PIN_7
 #define L0_GPIO_Port GPIOC
-#define L1_Pin GPIO_PIN_9
-#define L1_GPIO_Port GPIOA
+#define LED_RED_Pin GPIO_PIN_9
+#define LED_RED_GPIO_Port GPIOA
 #define UCPD_DBN_Pin GPIO_PIN_5
 #define UCPD_DBN_GPIO_Port GPIOB
-#define LED_BLUE_Pin GPIO_PIN_7
-#define LED_BLUE_GPIO_Port GPIOB
+#define L1_Pin GPIO_PIN_7
+#define L1_GPIO_Port GPIOB
+#define B1_Pin GPIO_PIN_8
+#define B1_GPIO_Port GPIOB
+#define B1_EXTI_IRQn EXTI8_IRQn
 
 /* USER CODE BEGIN Private defines */
 

@@ -49,10 +49,18 @@ RTC_HandleTypeDef hrtc;
 PCD_HandleTypeDef hpcd_USB_FS;
 
 /* USER CODE BEGIN PV */
-uint8_t flag = 0;
-int estado = 0;
-int BO=0;
-int B1=0;
+
+
+
+
+uint8_t interrupcion0=0; //var que refleJa la interrupcion causada por la activacion de B0
+
+uint8_t interrupcion1=0;//var que refleJa la interrupcion causada por la activacion de B1
+
+int estado = 0; //var para almacenar estado en el que  se encuentra la ejecucion
+
+
+
 
 /* USER CODE END PV */
 
@@ -116,10 +124,59 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
-	  if(flag == 1){
-		  HAL_GPIO_WritePin(L0_Pin, L0_Pin, GPIO_PIN_SET);
+	  //cambios de estado segun estado actual para B0=1; B1=0
+	  if(interrupcion0==1){
+		  if(estado==0){
+			  estado=3;
+		  }else if(estado==1){
+			  estado=0;
+		  }else if(estado==2){
+			  estado=1;
+		  }else if(estado==3){
+			  estado=2;
+		  }
+		  interrupcion0=0;
+
+	  }else if(interrupcion1==1){//cambios de estado segun estado actual para B0=0; B1=1
+
+		  if(estado==0){
+			  estado=1;
+		  }else if(estado==1){
+			  estado=2;
+		  }else if(estado==2){
+			  estado=3;
+		  }else if(estado==3){
+			  estado=0;
+		  }
+		  interrupcion1=0;
+
 	  }
+
+	  //acciones para cada estado
+	  if(estado==0){
+		  //L0=0; L1=1
+		  HAL_GPIO_WritePin(L0_GPIO_Port, L0_Pin, GPIO_PIN_RESET);
+		  HAL_GPIO_WritePin(L1_GPIO_Port, L1_Pin, GPIO_PIN_SET);
+
+
+	  }else if(estado==1){
+		  //L0=1; L1=0
+		  HAL_GPIO_WritePin(L0_GPIO_Port, L0_Pin, GPIO_PIN_SET);
+		  HAL_GPIO_WritePin(L1_GPIO_Port, L1_Pin, GPIO_PIN_RESET);
+
+
+	  }else if(estado==2){
+		  //L0=1; L1=1
+		  HAL_GPIO_WritePin(L0_GPIO_Port, L0_Pin, GPIO_PIN_SET);
+		  HAL_GPIO_WritePin(L1_GPIO_Port, L1_Pin, GPIO_PIN_SET);
+
+	  }else if(estado==3){
+		  //L0=0; L1=0
+		  HAL_GPIO_WritePin(L0_GPIO_Port, L0_Pin, GPIO_PIN_RESET);
+		  HAL_GPIO_WritePin(L1_GPIO_Port, L1_Pin, GPIO_PIN_RESET);
+
+	  }
+    /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
@@ -477,16 +534,16 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(L0_GPIO_Port, L0_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(L1_GPIO_Port, L1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, UCPD_DBN_Pin|LED_BLUE_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, UCPD_DBN_Pin|L1_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : B1_Pin */
-  GPIO_InitStruct.Pin = B1_Pin;
+  /*Configure GPIO pin : B0_Pin */
+  GPIO_InitStruct.Pin = B0_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(B0_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : UCPD_FLT_Pin */
   GPIO_InitStruct.Pin = UCPD_FLT_Pin;
@@ -501,21 +558,30 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(L0_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : L1_Pin */
-  GPIO_InitStruct.Pin = L1_Pin;
+  /*Configure GPIO pin : LED_RED_Pin */
+  GPIO_InitStruct.Pin = LED_RED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(L1_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(LED_RED_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : UCPD_DBN_Pin LED_BLUE_Pin */
-  GPIO_InitStruct.Pin = UCPD_DBN_Pin|LED_BLUE_Pin;
+  /*Configure GPIO pins : UCPD_DBN_Pin L1_Pin */
+  GPIO_InitStruct.Pin = UCPD_DBN_Pin|L1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : B1_Pin */
+  GPIO_InitStruct.Pin = B1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
+
   /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI8_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI8_IRQn);
+
   HAL_NVIC_SetPriority(EXTI13_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI13_IRQn);
 
@@ -524,9 +590,15 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_GPIO_EXTI_Rising_Callback(uint16_t GPIO_Pin)
+{
+	//Almacenamiento de la interrupccion segun la fuente de su causa
+	if (GPIO_Pin == B0_Pin){
+		interrupcion0 = 1;
 
-void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
-	flag=1;
+	}else {
+		interrupcion1 = 1;
+	}
 
 }
 
